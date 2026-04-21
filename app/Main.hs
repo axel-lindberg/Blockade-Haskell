@@ -2,20 +2,16 @@ module Main (main) where
 	-- import Board (tile_size)
 
 import Raylib.Core
-	(
-		beginDrawing,
-		endDrawing,
-		clearBackground,
-		initWindow,
-		closeWindow,
-		setTargetFPS,
-	)
 
-import Raylib.Core.Shapes (drawRectangle)
+import Raylib.Core.Shapes
+import Raylib.Types
 
-import Raylib.Core.Text (drawText)
-import Raylib.Util (whileWindowOpen0)
-import Raylib.Util.Colors (lightGray, black, green)
+import Raylib.Core.Text
+import Raylib.Util
+import Raylib.Util.Colors
+
+import Data.IORef
+import Control.Monad (when)
 
 data GameState = Start | Playing | GameOver deriving (Enum)
 
@@ -40,29 +36,34 @@ main = do
 	initWindow width height "Blockade"
 	setTargetFPS fps
 
-	let gameState = Start
+	gameStateRef <- newIORef Start
 
-	whileWindowOpen0 
-		( do
-			beginDrawing
+	whileWindowOpen0 (do
+		beginDrawing
+		clearBackground black
 
-			clearBackground black
+		gameState <- readIORef gameStateRef
 
-			case gameState of
-				Start -> 
-					do
-						drawText "Blockade" (round (fromIntegral(width)/fromIntegral(2)) - 18 * 5) 30 40 green
-						drawText "Press any key to start" 400 (round (fromIntegral(width)/fromIntegral(2))) 40 green
+		case gameState of
+			Start -> do
+				drawText "Blockade" (round (fromIntegral(width)/fromIntegral(2)) - 18 * 5) 30 40 green
+				drawText "Press SPACE to start" 400 (round (fromIntegral(width)/fromIntegral(2))) 40 green
+
+				pressed <- isKeyPressed KeySpace
+                
+				when pressed (do 
+					writeIORef gameStateRef Playing
+					)
 				
-				--Playing ->
-				
-				--GameOver ->
-					--do
-						--initWindow width height "Player # won!"
+			Playing -> do 
+				drawText "Playing" (round (fromIntegral(width)/fromIntegral(2)) - 18 * 5) 30 40 green
+					
+			--GameOver -> do
+						--drawText "Player # won!" 400 300 40 green
 						
-			drawBorder
+		drawBorder
 
-			endDrawing
+		endDrawing
 		)
 
 	-- closeWindow
