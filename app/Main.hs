@@ -57,9 +57,22 @@ main = do
 				
 			Playing -> do 
 				drawText "Playing" (round (fromIntegral(width)/fromIntegral(2)) - 18 * 5) 30 40 green
+
+				pressed <- isKeyPressed KeySpace
+                
+				when pressed (do 
+					writeIORef gameStateRef GameOver
+					)
 					
-			--GameOver -> do
-						--drawText "Player # won!" 400 300 40 green
+			GameOver -> do
+				drawText "Player # won!" (round (fromIntegral(width)/fromIntegral(2)) - 18 * 5) 30 40 green
+				drawText "Press ENTER to play again" 400 (round (fromIntegral(width)/fromIntegral(2))) 40 green
+
+				pressed <- isKeyPressed KeyEnter
+                
+				when pressed (do 
+					writeIORef gameStateRef Start
+					)
 						
 		drawBorder
 
