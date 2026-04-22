@@ -1,13 +1,15 @@
 module Player where
 
-import Raylib.Util.Colors (lightGray, black, green)
+import Board (getTile, Position, tile_size)
 
-data Dir = Up | Down | Left | Right deriving (Enum, Show)
+import Raylib.Util.Colors (green)
+import Raylib.Core.Shapes (drawRectangle)
+
+data Dir = Up | Down | Left | Right
+
 data Player = Player {
-	pos_x :: Int,	
-	pos_y :: Int,
-	dir :: Dir,
-	score :: Int
+	pos :: Position,
+	dir :: Dir
 }
 
 -- playerGetMovementVector :: Player -> Vector2
@@ -16,9 +18,12 @@ data Player = Player {
 -- playerGetMovementVector (_, _, Left, _) = Vector2 -1 0
 -- playerGetMovementVector (_, _, Right, _) = Vector2 1 0
 
--- drawPlayer :: Player -> IO ()
--- drawPlayer player = do
--- 	let center = getTileCoord (pos_x player) (pos_y player)
+drawPlayer :: Player -> IO ()
+drawPlayer player = do
+	let (x, y) = getTile (pos player)
+	drawRectangle x y tile_size tile_size green
+
+
 -- 	let movementVector = playerGetMovementVector player
 -- 	let top = center + movementVector * 0.7
 -- 	let right = center + (multiplicativeInverse movementVector) * 0.5

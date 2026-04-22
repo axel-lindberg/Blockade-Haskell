@@ -1,14 +1,35 @@
 module Board where
 
-data Tiles = Tiles {
-    posX :: Int,
-    posY :: Int,
-    marked :: Bool
+import Raylib.Util.Colors (green)
+import Raylib.Core.Shapes (drawRectangle)
+
+type Position = (Int, Int)
+
+data Tile = Tile {
+    pos :: Position
 }
 
--- tile_size = 16
--- tiles_h = round(fromIntegral(width) / fromIntegral(tile_size))
--- tiles_v = round (fromIntegral(height) / fromIntegral(tile_size))
+tile_size :: Int
+tile_size = 32
 
--- getTileCoord :: Int -> Int -> Vector2
--- getTileCoord x y = Vector2 (x * tiles_v) (y * tiles_h)
+screenWidth :: Int
+screenWidth = 896
+
+screenHeight :: Int
+screenHeight = 800
+
+tiles_h :: Int
+tiles_h = round(fromIntegral(screenWidth) / fromIntegral(tile_size))
+
+tiles_v :: Int
+tiles_v = round (fromIntegral(screenHeight) / fromIntegral(tile_size))
+
+getTile :: (Int, Int) -> Position
+getTile (x, y) = (x * tile_size, y * tile_size)
+
+drawBorder :: IO ()
+drawBorder = do
+	drawRectangle 0 0 screenWidth tile_size green -- Top
+	drawRectangle (screenWidth - tile_size) 0 tile_size screenHeight green -- Right
+	drawRectangle 0 (screenHeight - tile_size) screenWidth tile_size green -- Bottom
+	drawRectangle 0 0 tile_size screenHeight green -- Left
