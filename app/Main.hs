@@ -15,7 +15,7 @@ import Raylib.Util.Colors
 import Data.IORef
 
 fps:: Int
-fps = 4
+fps = 1
 
 main :: IO ()
 main = do
@@ -23,14 +23,13 @@ main = do
 	setTargetFPS fps
 
 	whileWindowOpen0 (do
-		beginDrawing
-		clearBackground black
 
 		let initialState =
 			GameState {
 				mode = Start,
-				player1 = Player (5, 5) PlayerRight,
-				player2 = Player (10, 10) PlayerLeft
+				player1 = Player (3, 3) PlayerDown,
+				player2 = Player (24, 21) PlayerUp,
+				trail = []
 			}
 		
 		gameLoop initialState

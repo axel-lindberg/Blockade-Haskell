@@ -1,4 +1,4 @@
-module Player(Player(..), Dir(..), drawPlayer, movePlayer, inputPlayer1, inputPlayer2) where
+module Player(Player(..), Dir(..), drawPlayer, movePlayer, inputPlayer1, inputPlayer2, isOutOfBounds) where
 
 import Board
 
@@ -67,3 +67,8 @@ inputPlayer2 player = do
 			 else if pressedDown then player {direction = PlayerDown}
 			 else if pressedRight then player {direction = PlayerRight}
 			 else player)
+			
+isOutOfBounds :: Position -> Bool
+isOutOfBounds (x, y) =
+    x <= 0 || x >= tiles_W - 1 ||
+    y <= 0 || y >= tiles_H - 1

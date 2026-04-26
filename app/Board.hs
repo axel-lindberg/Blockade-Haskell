@@ -1,4 +1,4 @@
-module Board(Position, Tile(..), tile_size, screenWidth, screenHeight, tiles_H, tiles_W, getTile, drawBorder, drawTile) where
+module Board(Position, Tile(..), tile_size, screenWidth, screenHeight, tiles_H, tiles_W, getTile, drawBorder, drawTile, drawTrailTile) where
 
 import Raylib.Util.Colors (green)
 import Raylib.Core.Shapes (drawRectangle)
@@ -6,8 +6,7 @@ import Raylib.Core.Shapes (drawRectangle)
 type Position = (Int, Int)
 
 data Tile = Tile {
-    position :: Position,
-	isMarked :: Bool
+    position :: Position
 }
 
 tile_size :: Int
@@ -37,9 +36,12 @@ drawBorder :: IO ()
 drawBorder = 
 	mapM_ drawTile borderTiles
 	where
-		top = [Tile (x, 0) True | x <- [0 .. tiles_W]]
-		bottom = [Tile (x, tiles_H - 1) True | x <- [0 .. tiles_W]]
-		left = [Tile (0, y) True | y <- [0 .. tiles_H - 1]]
-		right = [Tile (tiles_W - 1, y) True | y <- [0 .. tiles_H - 1]]
+		top = [Tile (x, 0) | x <- [0 .. tiles_W]]
+		bottom = [Tile (x, tiles_H - 1) | x <- [0 .. tiles_W]]
+		left = [Tile (0, y) | y <- [0 .. tiles_H - 1]]
+		right = [Tile (tiles_W - 1, y) | y <- [0 .. tiles_H - 1]]
 
 		borderTiles = top ++ bottom ++ left ++ right
+
+drawTrailTile :: Position -> IO ()
+drawTrailTile position = drawTile (Tile position)
