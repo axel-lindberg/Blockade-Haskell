@@ -1,4 +1,4 @@
-module Board where
+module Board(Position, Tile(..), tile_size, screenWidth, screenHeight, tiles_h, tiles_v, getTile, drawBorder) where
 
 import Raylib.Util.Colors (green)
 import Raylib.Core.Shapes (drawRectangle)
@@ -6,7 +6,7 @@ import Raylib.Core.Shapes (drawRectangle)
 type Position = (Int, Int)
 
 data Tile = Tile {
-    pos :: Position
+    position :: Position
 }
 
 tile_size :: Int
