@@ -1,4 +1,4 @@
-module Board(Position, Tile(..), tile_size, screenWidth, screenHeight, tiles_h, tiles_v, getTile, drawBorder) where
+module Board(Position, Tile(..), tile_size, screenWidth, screenHeight, tiles_H, tiles_W, getTile, drawBorder, drawTile) where
 
 import Raylib.Util.Colors (green)
 import Raylib.Core.Shapes (drawRectangle)
@@ -6,7 +6,8 @@ import Raylib.Core.Shapes (drawRectangle)
 type Position = (Int, Int)
 
 data Tile = Tile {
-    position :: Position
+    position :: Position,
+	isMarked :: Bool
 }
 
 tile_size :: Int
@@ -18,18 +19,27 @@ screenWidth = 896
 screenHeight :: Int
 screenHeight = 800
 
-tiles_h :: Int
-tiles_h = round(fromIntegral(screenWidth) / fromIntegral(tile_size))
+tiles_W :: Int
+tiles_W = div screenWidth tile_size
 
-tiles_v :: Int
-tiles_v = round (fromIntegral(screenHeight) / fromIntegral(tile_size))
+tiles_H :: Int
+tiles_H = div screenHeight tile_size
 
 getTile :: (Int, Int) -> Position
 getTile (x, y) = (x * tile_size, y * tile_size)
 
+drawTile :: Tile -> IO ()
+drawTile tile =
+	let (x, y) = getTile (position tile)
+	in drawRectangle x y tile_size tile_size green
+
 drawBorder :: IO ()
-drawBorder = do
-	drawRectangle 0 0 screenWidth tile_size green -- Top
-	drawRectangle (screenWidth - tile_size) 0 tile_size screenHeight green -- Right
-	drawRectangle 0 (screenHeight - tile_size) screenWidth tile_size green -- Bottom
-	drawRectangle 0 0 tile_size screenHeight green -- Left
+drawBorder = 
+	mapM_ drawTile borderTiles
+	where
+		top = [Tile (x, 0) True | x <- [0 .. tiles_W]]
+		bottom = [Tile (x, tiles_H - 1) True | x <- [0 .. tiles_W]]
+		left = [Tile (0, y) True | y <- [0 .. tiles_H - 1]]
+		right = [Tile (tiles_W - 1, y) True | y <- [0 .. tiles_H - 1]]
+
+		borderTiles = top ++ bottom ++ left ++ right

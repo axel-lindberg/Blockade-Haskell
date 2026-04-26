@@ -28,7 +28,7 @@ updateGame gameState =
             return gameState {player1 = player1', player2 = player2'}
 
         GameOver -> do
-            pressed <- isKeyPressed KeySpace
+            pressed <- isKeyPressed KeyEnter
             return (if pressed then gameState {mode = Start} else gameState)
 
 drawGame :: GameState -> IO()
@@ -36,6 +36,7 @@ drawGame gameState =
     case mode gameState of
         Start -> do 
             drawText "Blockade" 400 300 40 green
+            drawText "Press Space to start" 200 400 40 green
 
         Playing -> do
             drawBorder
@@ -44,6 +45,7 @@ drawGame gameState =
         
         GameOver -> do
             drawText "Game Over" 400 300 40 green
+            drawText "Press Enter to play again" 200 400 40 green
 
 gameLoop :: GameState -> IO()
 gameLoop gameState = do

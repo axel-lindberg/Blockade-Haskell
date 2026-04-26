@@ -1,5 +1,5 @@
 module Main (main) where
-import Board (tile_size, screenWidth, screenHeight, tiles_h, tiles_v, drawBorder)
+import Board
 import Player
 import GameState
 
