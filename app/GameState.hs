@@ -6,6 +6,7 @@ import Raylib.Core
 import Raylib.Types
 import Raylib.Core.Text
 import Raylib.Util.Colors
+import Raylib.Core.Textures
 
 data Mode = Start | Playing | GameOver
 type Trail = [Position]
@@ -14,7 +15,9 @@ data GameState = GameState {
 	mode :: Mode,
 	player1 :: Player,
 	player2 :: Player,
-    trail :: Trail
+    trail :: Trail,
+    texture1 :: Texture,
+    texture2 :: Texture
 	}
 
 updateGame :: GameState -> IO GameState
@@ -46,7 +49,7 @@ updateGame gameState =
                 mode = Start,
                 player1 = Player (3, 3) PlayerDown,
                 player2 = Player (24, 21) PlayerUp,
-                trail = []
+                trail = [(3, 3), (24, 21)]
                 }
                 else gameState)
 
@@ -54,18 +57,22 @@ drawGame :: GameState -> IO()
 drawGame gameState =
     case mode gameState of
         Start -> do 
-            drawText "Blockade" 300 300 40 green
-            drawText "Press Space to start" 250 400 40 green
+            textWidth1 <- measureText "Blockade" 40
+            textWidth2 <- measureText "Press Space to start" 40
+            drawText "Blockade" (div (screenWidth - textWidth1) 2) 300 40 green
+            drawText "Press Space to start" (div (screenWidth - textWidth2) 2) 400 40 green
 
         Playing -> do
             drawBorder
             mapM_ drawTrailTile (trail gameState)
-            drawPlayer (player1 gameState)
-            drawPlayer (player2 gameState)
+            drawPlayer (player1 gameState) (texture1 gameState)
+            drawPlayer (player2 gameState) (texture2 gameState)
         
         GameOver -> do
-            drawText "Game Over" 300 300 40 green
-            drawText "Press Enter to play again" 200 400 40 green
+            textWidth1 <- measureText "Game Over" 40
+            textWidth2 <- measureText "Press Enter to play again" 40
+            drawText "Game Over" (div (screenWidth - textWidth1) 2) 300 40 green
+            drawText "Press Enter to play again" (div (screenWidth - textWidth2) 2) 400 40 green
 
 gameLoop :: GameState -> IO()
 gameLoop gameState = do

@@ -3,33 +3,45 @@ module Player(Player(..), Dir(..), drawPlayer, movePlayer, inputPlayer1, inputPl
 import Board
 
 import Raylib.Core
-import Raylib.Util.Colors (green)
+import Raylib.Util.Colors
 import Raylib.Core.Shapes (drawRectangle)
 import Raylib.Types
+import Raylib.Core.Textures
 
 data Dir = PlayerUp | PlayerDown | PlayerLeft | PlayerRight
+	deriving (Eq)
 
 data Player = Player {
 	playerPosition :: Position,
 	direction :: Dir
 }
 
--- playerGetMovementVector :: Player -> Vector2
--- playerGetMovementVector (_, _, Up, _) = Vector2 0 1
--- playerGetMovementVector (_, _, Down, _) = Vector2 0 -1
--- playerGetMovementVector (_, _, Left, _) = Vector2 -1 0
--- playerGetMovementVector (_, _, Right, _) = Vector2 1 0
+drawPlayer :: Player -> Texture -> IO ()
+drawPlayer player texture = do
+    let (x, y) = getTile (playerPosition player)
 
--- 	let movementVector = playerGetMovementVector player
--- 	let top = center + movementVector * 0.7
--- 	let right = center + (multiplicativeInverse movementVector) * 0.5
--- 	let left = center - (multiplicativeInverse movementVector) * 0.5
--- 	drawTriangle top right left green
+        rotation =
+            case direction player of
+                PlayerUp    -> 0
+                PlayerRight -> 90
+                PlayerDown  -> 180
+                PlayerLeft  -> 270
 
-drawPlayer :: Player -> IO ()
-drawPlayer player = do
-	let (x, y) = getTile (playerPosition player)
-	drawRectangle x y tile_size tile_size green
+        destRect = Rectangle
+            (fromIntegral x + fromIntegral tile_size / 2)
+            (fromIntegral y + fromIntegral tile_size / 2)
+            (fromIntegral tile_size)
+            (fromIntegral tile_size)
+
+        sourceRect = Rectangle 0 0 32 32
+
+        origin = Vector2
+            (fromIntegral tile_size / 2)
+            (fromIntegral tile_size / 2)
+
+    drawTexturePro texture sourceRect destRect origin rotation white
+
+	
 
 movePlayer :: Player -> (Player -> IO Player) -> IO Player
 movePlayer player inputPlayer = do
@@ -44,28 +56,30 @@ movePlayer player inputPlayer = do
 
 inputPlayer1 :: Player -> IO Player
 inputPlayer1 player = do
+	let oldDirection = direction player
 	pressedW <- isKeyPressed KeyW
 	pressedA <- isKeyPressed KeyA
 	pressedS <- isKeyPressed KeyS
 	pressedD <- isKeyPressed KeyD
 
-	return (if pressedW then player {direction = PlayerUp}
-			 else if pressedA then player {direction = PlayerLeft}
-			 else if pressedS then player {direction = PlayerDown}
-			 else if pressedD then player {direction = PlayerRight}
+	return (if pressedW && (oldDirection /= PlayerDown) then player {direction = PlayerUp}
+			 else if pressedA && (oldDirection /= PlayerRight) then player {direction = PlayerLeft}
+			 else if pressedS && (oldDirection /= PlayerUp) then player {direction = PlayerDown}
+			 else if pressedD && (oldDirection /= PlayerLeft) then player {direction = PlayerRight}
 			 else player)
 
 inputPlayer2 :: Player -> IO Player
 inputPlayer2 player = do
+	let oldDirection = direction player
 	pressedUp <- isKeyPressed KeyUp
 	pressedLeft <- isKeyPressed KeyLeft
 	pressedDown <- isKeyPressed KeyDown
 	pressedRight <- isKeyPressed KeyRight
 
-	return (if pressedUp then player {direction = PlayerUp}
-			 else if pressedLeft then player {direction = PlayerLeft}
-			 else if pressedDown then player {direction = PlayerDown}
-			 else if pressedRight then player {direction = PlayerRight}
+	return (if pressedUp && (oldDirection /= PlayerDown) then player {direction = PlayerUp}
+			 else if pressedLeft && (oldDirection /= PlayerRight) then player {direction = PlayerLeft}
+			 else if pressedDown && (oldDirection /= PlayerUp) then player {direction = PlayerDown}
+			 else if pressedRight && (oldDirection /= PlayerLeft) then player {direction = PlayerRight}
 			 else player)
 			
 isOutOfBounds :: Position -> Bool
