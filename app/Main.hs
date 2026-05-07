@@ -16,7 +16,7 @@ import Raylib.Core.Textures
 import Data.IORef
 
 fps:: Int
-fps = 2
+fps = 3
 
 main :: IO ()
 main = do

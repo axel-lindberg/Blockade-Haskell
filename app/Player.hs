@@ -4,7 +4,6 @@ import Board
 
 import Raylib.Core
 import Raylib.Util.Colors
-import Raylib.Core.Shapes (drawRectangle)
 import Raylib.Types
 import Raylib.Core.Textures
 
