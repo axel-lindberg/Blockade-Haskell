@@ -19,6 +19,7 @@ drawPlayer :: Player -> Texture -> IO ()
 drawPlayer player texture = do
     let (x, y) = getTile (playerPosition player)
 
+		-- Get head rotation
         rotation =
             case direction player of
                 PlayerUp    -> 0
@@ -26,14 +27,17 @@ drawPlayer player texture = do
                 PlayerDown  -> 180
                 PlayerLeft  -> 270
 
+		-- Get position of player head
         destRect = Rectangle
             (fromIntegral x + fromIntegral tile_size / 2)
             (fromIntegral y + fromIntegral tile_size / 2)
             (fromIntegral tile_size)
             (fromIntegral tile_size)
 
+		-- Where to read in texture
         sourceRect = Rectangle 0 0 32 32
 
+		-- What origin to rotate about
         origin = Vector2
             (fromIntegral tile_size / 2)
             (fromIntegral tile_size / 2)
@@ -44,8 +48,10 @@ drawPlayer player texture = do
 
 movePlayer :: Player -> (Player -> IO Player) -> IO Player
 movePlayer player inputPlayer = do
+	-- Get player key input
 	player' <- inputPlayer player
 	let (x, y) = playerPosition player'
+	-- Update position based on potential new direction
 	return (case direction player' of
 		PlayerUp	-> player' {playerPosition = (x, y - 1)}
 		PlayerDown	-> player' {playerPosition = (x, y + 1)}
@@ -53,6 +59,7 @@ movePlayer player inputPlayer = do
 		PlayerRight	-> player' {playerPosition = (x + 1, y)})
 
 
+-- Map player keybinds to direction for Player1 (WASD Keys)
 inputPlayer1 :: Player -> IO Player
 inputPlayer1 player = do
 	let oldDirection = direction player
@@ -67,6 +74,7 @@ inputPlayer1 player = do
 			 else if pressedD && (oldDirection /= PlayerLeft) then player {direction = PlayerRight}
 			 else player)
 
+-- Map player keybinds to direction for Player2 (Arrow Keys)
 inputPlayer2 :: Player -> IO Player
 inputPlayer2 player = do
 	let oldDirection = direction player
@@ -81,6 +89,7 @@ inputPlayer2 player = do
 			 else if pressedRight && (oldDirection /= PlayerLeft) then player {direction = PlayerRight}
 			 else player)
 			
+-- Quick coordinate check to see if coordinates are out of bounds
 isOutOfBounds :: Position -> Bool
 isOutOfBounds (x, y) =
     x <= 0 || x >= tiles_W - 1 ||

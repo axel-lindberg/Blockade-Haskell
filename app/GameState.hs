@@ -28,22 +28,27 @@ updateGame gameState =
             return (if pressed then gameState {mode = Playing} else gameState)
         
         Playing -> do
+            -- Update player position according to player input (if any)
             player1' <- movePlayer (player1 gameState) inputPlayer1
             player2' <- movePlayer (player2 gameState) inputPlayer2
 
+            -- Determine if players' head collides with border or own tail
             let position1 = playerPosition player1'
                 position2 = playerPosition player2'
                 oldTrail = trail gameState
 
             let collision = isOutOfBounds position1 || isOutOfBounds position2 || elem position1 oldTrail || elem position2 oldTrail
 
+            -- Increment trail
             let trail' = position1 : position2 : oldTrail
 
+            -- Upon collision then end game
             if collision
                 then return gameState {mode = GameOver}
                 else return gameState {player1 = player1', player2 = player2', trail = trail'}
 
         GameOver -> do
+            -- Check for Enter being pressed to restart the game
             pressed <- isKeyPressed KeyEnter
             return (if pressed then gameState {
                 mode = Start,
@@ -57,6 +62,7 @@ drawGame :: GameState -> IO()
 drawGame gameState =
     case mode gameState of
         Start -> do 
+            -- Get width of text to center them, then draw them centered
             textWidth1 <- measureText "Blockade" 40
             textWidth2 <- measureText "Press Space to start" 40
             drawText "Blockade" (div (screenWidth - textWidth1) 2) 300 40 green
@@ -64,11 +70,14 @@ drawGame gameState =
 
         Playing -> do
             drawBorder
+            -- Draw the trails of the players
             mapM_ drawTrailTile (trail gameState)
+            -- Draw the head of the players
             drawPlayer (player1 gameState) (texture1 gameState)
             drawPlayer (player2 gameState) (texture2 gameState)
         
         GameOver -> do
+            -- Get width of text to center them, then draw them centered
             textWidth1 <- measureText "Game Over" 40
             textWidth2 <- measureText "Press Enter to play again" 40
             drawText "Game Over" (div (screenWidth - textWidth1) 2) 300 40 green
@@ -76,12 +85,18 @@ drawGame gameState =
 
 gameLoop :: GameState -> IO()
 gameLoop gameState = do
+    -- Initialize drawing mode in raylib
     beginDrawing
+    -- Clear previous frame by setting it to black
     clearBackground black
 
+    -- Update game state by executing a tick
     gameState' <- updateGame gameState
+    -- Render the updated game
     drawGame gameState'
 
+    -- Stop drawing mode in raylib (will blit to screen)
     endDrawing
     
+    -- Run again but with new game state
     gameLoop gameState'

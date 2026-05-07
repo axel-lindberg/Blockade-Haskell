@@ -23,9 +23,11 @@ main = do
     initWindow screenWidth screenHeight "Blockade"
     setTargetFPS fps
 
+    -- Load player textures
     texturePlayer1 <- loadTexture "assets/player1Arrow.png"
     texturePlayer2 <- loadTexture "assets/player2Arrow.png"
 
+    -- Initialize gameState with the start values
     let initialState =
             GameState
                 { mode = Start
@@ -36,4 +38,5 @@ main = do
                 , texture2 = texturePlayer2
                 }
 
+    -- Start and run gameloop
     gameLoop initialState

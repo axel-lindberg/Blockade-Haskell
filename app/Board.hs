@@ -18,20 +18,25 @@ screenWidth = 896
 screenHeight :: Int
 screenHeight = 800
 
+-- Get amount of tiles horizontally
 tiles_W :: Int
 tiles_W = div screenWidth tile_size
 
+-- Get amount of tiles vertically
 tiles_H :: Int
 tiles_H = div screenHeight tile_size
 
+-- Get pixel coordinate of a tile
 getTile :: (Int, Int) -> Position
 getTile (x, y) = (x * tile_size, y * tile_size)
 
+-- Draw rectangle at position
 drawTile :: Tile -> IO ()
 drawTile tile =
 	let (x, y) = getTile (position tile)
 	in drawRectangle x y tile_size tile_size green
 
+-- Add tiles around the map
 drawBorder :: IO ()
 drawBorder = 
 	mapM_ drawTile borderTiles
@@ -43,5 +48,6 @@ drawBorder =
 
 		borderTiles = top ++ bottom ++ left ++ right
 
+-- Helper function to call draw tile for positions
 drawTrailTile :: Position -> IO ()
 drawTrailTile position = drawTile (Tile position)
